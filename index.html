@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>$PLAY Allocation Checker</title>
+  <title>$PLAY Allocation Checker - TGE Disaster Edition</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -36,6 +36,10 @@
       10% { opacity: 1; }
       90% { opacity: 1; }
       100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.01); }
     }
 
     header {
@@ -76,23 +80,16 @@
       text-align: center; font-weight: 600; color: #ffcccc;
       box-shadow: 0 0 20px rgba(255,107,107,0.3);
     }
-
-    .slider-container {
-      margin: 1.2rem 0; font-size: 0.9rem;
+    .disaster-banner {
+      background: rgba(255,0,0,0.25); border: 3px solid #ff0000;
+      animation: pulse 2s infinite;
     }
-    .slider-container label { display: block; margin-bottom: 0.4rem; }
-    input[type="range"] {
-      width: 100%; height: 8px; border-radius: 4px; background: #333;
-      outline: none; -webkit-appearance: none; touch-action: pan-y;
+    .info-box {
+      background: rgba(157,78,221,0.15); border: 1px solid rgba(157,78,221,0.3);
+      border-radius: 16px; padding: 1rem; margin: 1rem 0; font-size: 0.9rem;
     }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 20px; height: 20px;
-      background: var(--accent); border-radius: 50%; cursor: pointer;
-      box-shadow: var(--glow);
-    }
-    input[type="range"]::-moz-range-thumb {
-      width: 20px; height: 20px; background: var(--accent); border-radius: 50%;
-      cursor: pointer; box-shadow: var(--glow); border: none;
+    .info-box ul {
+      margin: 0.5rem 0 0 1.5rem; text-align: left; line-height: 1.8;
     }
 
     .search-box { position: relative; margin: 2rem 0; }
@@ -123,7 +120,6 @@
     @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
     .value { color: var(--accent); font-weight: 600; }
     .scenario { margin: 0.8rem 0; padding: 1rem; background: rgba(157,78,221,0.1); border-radius: 10px; }
-    .liquidity-summary { margin: 1.2rem 0; padding: 1rem; background: rgba(0,255,0,0.1); border-radius: 10px; text-align: center; }
     .psg1-input {
       display: flex; align-items: center; gap: 0.8rem; margin: 1rem 0; font-size: 0.9rem;
     }
@@ -179,50 +175,8 @@
     <img src="PSG1Header.svg" alt="PlaySolana PSG1">
   </header>
 
-  <div style="background: linear-gradient(135deg, #ff0000, #8b0000); border: 3px solid #ff0000; border-radius: 20px; padding: 1.5rem; margin: 1rem auto; max-width: 680px; box-shadow: 0 0 40px rgba(255,0,0,0.5); animation: pulse 2s infinite;">
-    <h2 style="color: white; font-size: 1.8rem; margin-bottom: 1rem; text-align: center;">⚠️ TGE DISASTER ⚠️</h2>
-    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.7;">
-      <p style="margin-bottom: 0.8rem;"><strong>WHAT HAPPENED:</strong></p>
-      <ul style="list-style: none; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;">🚨 <strong>Security Breach:</strong> 24 wallets claimed BEFORE TGE and dumped on launch</li>
-        <li style="margin-bottom: 0.5rem;">💸 <strong>Surprise 30% Tax:</strong> NOT announced beforehand - instant claims lose 30%</li>
-        <li style="margin-bottom: 0.5rem;">📉 <strong>Price Crashed:</strong> Launch $0.03 → ATL $0.007 (-77%+)</li>
-        <li style="margin-bottom: 0.5rem;">🔒 <strong>Forced Staking:</strong> Need 3+ months to avoid full penalty</li>
-      </ul>
-      <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.3);"><strong>WHO FAILED:</strong><br>
-      🎯 PlaySolana Team - Failed to secure Genesis claims<br>
-      🎯 Metaplex - Last-minute 30% tax decision (unannounced)<br>
-      🎯 Communication - Zero warning about penalties</p>
-    </div>
-  </div>
-
-  <style>
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 40px rgba(255,0,0,0.5); }
-      50% { box-shadow: 0 0 60px rgba(255,0,0,0.9); }
-    }
-  </style>
-
-  <div style="background: linear-gradient(135deg, #ff0000, #cc0000); border: 3px solid #ff0000; border-radius: 20px; padding: 1.5rem; margin: 1rem auto; max-width: 680px; box-shadow: 0 0 40px rgba(255,0,0,0.5); animation: pulse 2s infinite;">
-    <h2 style="color: white; font-size: 1.5rem; margin-bottom: 1rem; text-align: center;">🚨 TGE COMPLETE DISASTER 🚨</h2>
-    <ul style="text-align: left; font-size: 0.95rem; line-height: 1.7; color: white; list-style: none;">
-      <li>❌ <strong>24 wallets claimed BEFORE TGE</strong> and dumped on launch</li>
-      <li>❌ <strong>30% TAX introduced last-minute</strong> (not announced)</li>
-      <li>❌ <strong>Team/Metaplex failed communications</strong></li>
-      <li>📊 <strong>Initial Price:</strong> $0.03 → <strong>Lowest:</strong> $0.007 (-77%)</li>
-      <li>⚠️ <strong>Claim now = 70% of allocation</strong> | <strong>3mo stake = 80%</strong></li>
-    </ul>
-  </div>
-
-  <style>
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 40px rgba(255,0,0,0.5); }
-      50% { box-shadow: 0 0 60px rgba(255,0,0,0.8); }
-    }
-  </style>
-
   <div class="top-bar">
-    <div class="countdown" id="countdown">TGE in: --:--:--</div>
+    <div class="countdown">TGE LAUNCHED</div>
     <a href="https://genesis.playsolana.com/claim" target="_blank" class="top-btn">Claim Site</a>
     <a href="https://x.com/playsolana" target="_blank" class="top-btn">Follow @PlaySolana</a>
     <a href="https://www.playsolana.com/litepaper" target="_blank" class="top-btn">Litepaper</a>
@@ -232,16 +186,65 @@
   <main>
     <h1>$PLAY Allocation Checker</h1>
 
-    <div class="warning">
-      <strong>⚠️ 30% PENALTY FOR INSTANT CLAIM</strong><br>
-      Claim now = <strong>70% of your allocation</strong><br>
-      Must stake 3+ months to avoid full penalty<br>
-      <small style="opacity:0.8;"><strong>This was NOT announced before TGE</strong></small>
+    <div class="warning disaster-banner">
+      <strong>🚨 TGE DISASTER - TOKEN LAUNCH COMPROMISED 🚨</strong><br>
+      24 wallets claimed BEFORE TGE and dumped on launch.<br>
+      Last-minute 30% claim tax added WITHOUT prior notice.<br>
+      <small style="opacity:0.9;">Price crashed from $0.04 to $0.007 (-82%)</small>
     </div>
 
-    <div style="background: rgba(157,78,221,0.15); border: 1px solid rgba(157,78,221,0.3); border-radius: 16px; padding: 1rem; margin: 1rem 0; font-size: 0.9rem; text-align: center;">
-      <strong>Estimated Rate:</strong> ~0.75 $PLAY per XP | 10,000 $PLAY per PSG1<br>
-      <strong>Live Price:</strong> $<span id="live-price">Loading...</span> | <strong>24h Change:</strong> <span id="price-change">--</span>
+    <div class="info-box" style="background: rgba(255,107,107,0.15); border: 2px solid var(--warn);">
+      <strong>⚠️ WHAT HAPPENED:</strong>
+      <ul>
+        <li><strong>Metaplex:</strong> Pushed for 30% claim tax at the last minute</li>
+        <li><strong>PlaySolana Team:</strong> Failed to communicate this tax to community</li>
+        <li><strong>Security Breach:</strong> 24 wallets exploited Web2 API to claim early & dump</li>
+        <li><strong>Result:</strong> Community lost 30% of allocation or forced into 3-12 month lockup</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <strong>CURRENT REALITY:</strong><br>
+      • Claim now = <strong style="color: var(--warn);">70% of allocation</strong> (30% tax)<br>
+      • Stake 3mo = <strong style="color: #ffcc66;">80%</strong> (base 70% + 10% bonus)<br>
+      • Stake 6mo = <strong style="color: #66ff66;">98%</strong> (base 70% + 40% bonus)<br>
+      • Stake 12mo = <strong style="color: #00ff00;">140%</strong> (base 70% + 100% bonus)<br>
+      <small style="opacity:0.8;">Minimum 3 months locked to recover any meaningful allocation</small>
+    </div>
+
+    <div class="info-box" style="background: rgba(255,204,102,0.15); border: 1px solid #ffcc66; text-align: center;">
+      <strong>Live $PLAY Price:</strong> $<span id="live-price" style="color: var(--accent); font-size: 1.3rem; font-weight: 700;">Loading...</span>
+      <span id="price-change" style="margin-left: 0.5rem; font-size: 0.9rem;"></span><br>
+      <small style="opacity:0.7;">Auto-updates from DexScreener/Jupiter (if CORS allows)</small>
+    </div>
+
+    <div class="slider-container" style="margin: 1.5rem 0; font-size: 0.9rem;">
+      <label style="display: block; margin-bottom: 0.5rem; text-align: center;">
+        Manual Price Override: $<span id="price-val" style="color: var(--accent); font-weight: 600;">0.017</span>
+      </label>
+      <input type="range" id="price-slider" min="0.001" max="0.1" value="0.017" step="0.001" style="width: 100%; height: 8px; border-radius: 4px; background: #333; outline: none; -webkit-appearance: none; touch-action: pan-y;">
+      <small style="display: block; text-align: center; opacity: 0.7; margin-top: 0.3rem;">
+        Use slider if live price fails to load
+      </small>
+    </div>
+
+    <style>
+      #price-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; width: 20px; height: 20px;
+        background: var(--accent); border-radius: 50%; cursor: pointer;
+        box-shadow: var(--glow);
+      }
+      #price-slider::-moz-range-thumb {
+        width: 20px; height: 20px; background: var(--accent); border-radius: 50%;
+        cursor: pointer; box-shadow: var(--glow); border: none;
+      }
+    </style>
+
+    <div class="warning" style="background: rgba(157,78,221,0.15); border: 1px solid rgba(157,78,221,0.3);">
+      <strong>⚠️ LEADERBOARD DATA IS POST-SNAPSHOT</strong><br>
+      XP values may be slightly higher than snapshot (users kept earning XP).<br>
+      Tool should be close, but check genesis.playsolana.com/claim for exact allocation.<br>
+      <small style="opacity:0.8;"><strong>Estimated: ~0.75 $PLAY per XP | 10k $PLAY per PSG1</strong></small>
     </div>
 
     <div class="search-box">
@@ -254,18 +257,7 @@
     <div id="output" class="result">
       <p>User: <span id="show-name" class="value"></span> <small>(Rank <span id="show-rank"></span>)</small></p>
       <p>XP: <span id="show-xp" class="value"></span> <small style="color:#ffcc66;">(May be slightly post-snapshot)</small></p>
-      <hr>
-      
-      <div style="background: rgba(255,107,107,0.2); border: 2px solid var(--warn); border-radius: 12px; padding: 1rem; margin: 1rem 0; font-size: 0.9rem;">
-        <strong>⚠️ YOUR FULL BASE ALLOCATION:</strong><br>
-        <span id="full-base" class="value" style="font-size: 1.3rem;"></span> $PLAY → $<span id="full-base-usd" class="value"></span> USD
-      </div>
-
-      <div class="scenario" style="background: rgba(255,0,0,0.15); border: 2px solid #ff3333;">
-        <strong>❌ INSTANT CLAIM (70% - PENALTY):</strong><br>
-        <span id="instant-play" class="value"></span> $PLAY → $<span id="instant-usd" class="value"></span> USD<br>
-        <small style="color:#ff6b6b;">You LOSE <span id="penalty-amount"></span> $PLAY!</small>
-      </div>
+      <hr style="margin: 1rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
 
       <div class="psg1-input" id="psg1-section" style="display:none;">
         <label><input type="checkbox" id="has-psg1"> I have PSG1 device(s)</label>
@@ -273,11 +265,23 @@
       </div>
 
       <div class="scenario">
-        <strong>Staking Options (Claim + Stake):</strong><br>
-        3 Mo → 80%: <span id="stake-3" class="value"></span> $PLAY ($<span id="stake-3-usd"></span>)<br>
-        6 Mo → 98%: <span id="stake-6" class="value"></span> $PLAY ($<span id="stake-6-usd"></span>)<br>
-        9 Mo → 112%: <span id="stake-9" class="value"></span> $PLAY ($<span id="stake-9-usd"></span>)<br>
-        12 Mo → 140%: <span id="stake-12" class="value"></span> $PLAY ($<span id="stake-12-usd"></span>)
+        <strong>🎯 Full Allocation (100% @ snapshot):</strong><br>
+        <span id="full-play" class="value"></span> $PLAY → $<span id="full-usd" class="value"></span> USD
+      </div>
+
+      <div class="scenario" style="background: rgba(255,107,107,0.15);">
+        <strong>💔 Instant Claim (70% after 30% tax):</strong><br>
+        <span id="instant-play" class="value"></span> $PLAY → $<span id="instant-usd" class="value"></span> USD
+      </div>
+
+      <div class="scenario">
+        <strong>⏳ Staking Options (to recover/exceed allocation):</strong><br>
+        <div style="margin-top: 0.5rem;">
+          3 Mo → 80%: <span id="stake-3" class="value"></span> $PLAY ($<span id="stake-3-usd"></span>)<br>
+          6 Mo → 98%: <span id="stake-6" class="value"></span> $PLAY ($<span id="stake-6-usd"></span>)<br>
+          9 Mo → 112%: <span id="stake-9" class="value"></span> $PLAY ($<span id="stake-9-usd"></span>)<br>
+          12 Mo → 140%: <span id="stake-12" class="value"></span> $PLAY ($<span id="stake-12-usd"></span>)
+        </div>
       </div>
 
       <div class="btn-row">
@@ -313,12 +317,18 @@
         <strong>XP Rewards:</strong> ~0.75 $PLAY per XP (estimated)<br>
         <em>(125.6M total XP → ~94M $PLAY total)</em>
       </p>
+      <hr style="margin: 1rem 0; border-color: rgba(255,255,255,0.1);">
+      <p style="font-size:0.85rem; opacity:0.8; color: var(--warn);">
+        <strong>⚠️ CLAIM TAX:</strong> 30% penalty for instant claim (you get 70%)<br>
+        <strong>STAKING:</strong> Lock for 3-12 months to recover/exceed 100%
+      </p>
     </div>
   </div>
 
   <footer>
     TGE: November 14, 2025 @ 12:30 UTC | Data from PlayDex (post-snapshot)<br>
-    <em>Using estimated rate: ~0.75 $PLAY per XP. Verify on claim site for exact values.</em>
+    <em>Tool uses estimated rate: ~0.75 $PLAY per XP. Verify on claim site for exact values.</em><br>
+    <strong style="color: var(--warn);">30% claim tax. Minimum 3mo stake to recover allocation.</strong>
   </footer>
 
   <script>
@@ -327,43 +337,91 @@
     const XP_RATE = 0.75; // Estimated: ~0.75 $PLAY per XP
     const PSG1_PER_DEVICE = 10000; // Confirmed: 10k $PLAY per PSG1
     const TOKENS_FOR_XP = TOTAL_XP * XP_RATE; // ~94.2M tokens
+    const CLAIM_TAX = 0.30; // 30% tax on instant claim
     const SOL_ADDRESS = "2GwHm5n8KbHgruhfVWHRukRGKoj4QVNC7Q2NCKw5xPph";
-    const TGE_TIME = new Date("2025-11-14T12:30:00Z").getTime();
+    const PLAY_TOKEN_MINT = "PLAYaJfivDjWu5bmBv61PsxCx2zr9jyQ2j3yHZexMd9"; // $PLAY token address
     const WEBSITE_URL = "https://heimdall00.github.io/play-check";
-    const PLAY_TOKEN_MINT = "PLAYLrfqi6LQMNZHNd3MBmkYvP37gdwddXgYg3CmJmX"; // $PLAY token mint
 
     let users = [];
-    let currentPrice = 0.02; // Default fallback
+    let currentPrice = 0.017; // Will be updated by live price
     let hasPsg1 = false;
     let psg1Count = 1;
     let lastResult = {};
 
-    // FETCH LIVE PRICE FROM JUPITER
+    // LIVE PRICE FETCHING
     async function fetchLivePrice() {
       try {
-        const response = await fetch(`https://price.jup.ag/v6/price?ids=${PLAY_TOKEN_MINT}`);
-        const data = await response.json();
+        // Try Jupiter Price API v6
+        const response = await fetch(`https://price.jup.ag/v6/price?ids=${PLAY_TOKEN_MINT}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
         
+        if (!response.ok) throw new Error('Jupiter API failed');
+        
+        const data = await response.json();
         if (data.data && data.data[PLAY_TOKEN_MINT]) {
           const priceData = data.data[PLAY_TOKEN_MINT];
-          currentPrice = priceData.price || 0.02;
+          currentPrice = priceData.price;
           
-          document.getElementById("live-price").textContent = currentPrice.toFixed(6);
+          // Update both displays
+          document.getElementById('live-price').textContent = currentPrice.toFixed(6);
+          document.getElementById('live-price').style.color = 'var(--accent)';
+          document.getElementById('price-slider').value = currentPrice;
+          document.getElementById('price-val').textContent = currentPrice.toFixed(3);
           
-          // Update 24h change if available
-          if (priceData.extraInfo && priceData.extraInfo.quotedPrice) {
-            const change24h = priceData.extraInfo.quotedPrice.change24hPercent || 0;
-            const changeEl = document.getElementById("price-change");
-            changeEl.textContent = (change24h > 0 ? "+" : "") + change24h.toFixed(2) + "%";
-            changeEl.style.color = change24h >= 0 ? "#00ff00" : "#ff0000";
+          // Show price change if available
+          const changeSpan = document.getElementById('price-change');
+          if (priceData.extraInfo && priceData.extraInfo['24hChange']) {
+            const change = priceData.extraInfo['24hChange'];
+            const color = change >= 0 ? '#00ff00' : '#ff6b6b';
+            changeSpan.innerHTML = `<span style="color: ${color};">(${change >= 0 ? '+' : ''}${change.toFixed(2)}%)</span>`;
           }
           
-          updateResult(); // Recalculate with new price
+          updateResult();
+          return;
         }
-      } catch (error) {
-        console.error("Failed to fetch price:", error);
-        document.getElementById("live-price").textContent = currentPrice.toFixed(6);
-        document.getElementById("price-change").textContent = "N/A";
+        throw new Error('No price data');
+      } catch (e) {
+        console.error('Jupiter price fetch failed:', e);
+        
+        // Fallback: Try DexScreener API
+        try {
+          const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${PLAY_TOKEN_MINT}`);
+          const data = await response.json();
+          
+          if (data.pairs && data.pairs.length > 0) {
+            // Get the pair with highest liquidity
+            const mainPair = data.pairs.sort((a, b) => b.liquidity.usd - a.liquidity.usd)[0];
+            currentPrice = parseFloat(mainPair.priceUsd);
+            
+            // Update both displays
+            document.getElementById('live-price').textContent = currentPrice.toFixed(6);
+            document.getElementById('live-price').style.color = 'var(--accent)';
+            document.getElementById('price-slider').value = currentPrice;
+            document.getElementById('price-val').textContent = currentPrice.toFixed(3);
+            
+            const changeSpan = document.getElementById('price-change');
+            if (mainPair.priceChange && mainPair.priceChange.h24) {
+              const change = parseFloat(mainPair.priceChange.h24);
+              const color = change >= 0 ? '#00ff00' : '#ff6b6b';
+              changeSpan.innerHTML = `<span style="color: ${color};">(${change >= 0 ? '+' : ''}${change.toFixed(2)}%)</span>`;
+            }
+            
+            updateResult();
+            return;
+          }
+        } catch (e2) {
+          console.error('DexScreener fallback failed:', e2);
+        }
+        
+        // Final fallback - keep manual price from slider
+        document.getElementById('live-price').textContent = currentPrice.toFixed(6);
+        document.getElementById('live-price').style.color = '#ffcc66';
+        const changeSpan = document.getElementById('price-change');
+        changeSpan.innerHTML = '<span style="color: #888; font-size: 0.8rem;">(API blocked - use slider)</span>';
       }
     }
 
@@ -371,19 +429,21 @@
     fetchLivePrice();
     setInterval(fetchLivePrice, 30000);
 
-    // COUNTDOWN
-    function getCountdown() {
-      const diff = TGE_TIME - Date.now();
-      if (diff <= 0) return "TGE LIVE!";
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      return `${d}d ${h}h ${m}m ${s}s`;
-    }
-    setInterval(() => {
-      document.getElementById("countdown").textContent = `TGE in: ${getCountdown()}`;
-    }, 1000);
+    // PRICE SLIDER (manual override)
+    const priceSlider = document.getElementById("price-slider");
+    const priceVal = document.getElementById("price-val");
+
+    priceSlider.addEventListener("input", () => {
+      currentPrice = parseFloat(priceSlider.value);
+      priceVal.textContent = currentPrice.toFixed(3);
+      
+      // Visual feedback that manual mode is active
+      document.getElementById('live-price').textContent = currentPrice.toFixed(6);
+      document.getElementById('live-price').style.color = '#ffcc66';
+      document.getElementById('price-change').innerHTML = '<span style="color: #888; font-size: 0.8rem;">(manual override)</span>';
+      
+      updateResult();
+    });
 
     // PSG1
     const psg1Check = document.getElementById("has-psg1");
@@ -404,10 +464,9 @@
 
     // SHARE
     window.shareOnX = function() {
-      const play = format(lastResult.fullBase);
-      const instant = format(lastResult.instant);
-      const best = format(lastResult.stake12);
-      const tweet = `$PLAY TGE was a DISASTER!\n\nMy allocation: ${play} $PLAY\nInstant claim (70%): ${instant} $PLAY\n12mo stake (140%): ${best} $PLAY\n\n30% penalty NOT announced! Check yours: ${WEBSITE_URL}\n\n#PlaySolana #TGE`;
+      const fullPlay = format(lastResult.fullPlay);
+      const instantPlay = format(lastResult.instantPlay);
+      const tweet = `I'm getting ${fullPlay} $PLAY from PlaySolana but only ${instantPlay} instantly (70%) due to 30% claim tax.\n\nTGE got REKT by early claimers & last-minute changes.\n\nCheck yours: ${WEBSITE_URL}\n\n#PlaySolana #TGE`;
       window.open(`https://x.com/intent/post?text=${encodeURIComponent(tweet)}`, '_blank');
     };
 
@@ -463,41 +522,40 @@
     function showResult(u) {
       const xpPlay = u.xp * XP_RATE;
       const psg1Play = hasPsg1 ? PSG1_PER_DEVICE * psg1Count : 0;
-      const fullBase = xpPlay + psg1Play;
+      const fullPlay = xpPlay + psg1Play; // 100% allocation at snapshot
       
-      // NEW STAKING STRUCTURE (30% penalty)
-      const instant = fullBase * 0.7;  // 70%
-      const stake3 = fullBase * 0.8;   // 80%
-      const stake6 = fullBase * 0.98;  // 98%
-      const stake9 = fullBase * 1.12;  // 112%
-      const stake12 = fullBase * 1.4;  // 140%
+      // With 30% tax
+      const instantPlay = fullPlay * (1 - CLAIM_TAX); // 70%
       
-      const penalty = fullBase - instant;
+      // Staking options (base is 70%, bonuses are additional)
+      const stake3Play = fullPlay * 0.80;  // 70% + 10% = 80%
+      const stake6Play = fullPlay * 0.98;  // 70% + 40% = 110% (capped at 98% as shown)
+      const stake9Play = fullPlay * 1.12;  // 70% + 60% = 130% (adjusted to 112%)
+      const stake12Play = fullPlay * 1.40; // 70% + 100% = 170% (adjusted to 140%)
 
-      lastResult = { fullBase, instant, stake12 };
+      lastResult = { fullPlay, instantPlay };
 
       document.getElementById("show-name").textContent = u.name;
       document.getElementById("show-rank").textContent = u.rank;
       document.getElementById("show-xp").textContent = u.xp.toLocaleString();
       
-      document.getElementById("full-base").textContent = format(fullBase);
-      document.getElementById("full-base-usd").textContent = format(fullBase * currentPrice, 2);
+      document.getElementById("full-play").textContent = format(fullPlay);
+      document.getElementById("full-usd").textContent = format(fullPlay * currentPrice, 2);
       
-      document.getElementById("instant-play").textContent = format(instant);
-      document.getElementById("instant-usd").textContent = format(instant * currentPrice, 2);
-      document.getElementById("penalty-amount").textContent = format(penalty);
+      document.getElementById("instant-play").textContent = format(instantPlay);
+      document.getElementById("instant-usd").textContent = format(instantPlay * currentPrice, 2);
       
-      document.getElementById("stake-3").textContent = format(stake3);
-      document.getElementById("stake-3-usd").textContent = format(stake3 * currentPrice, 2);
+      document.getElementById("stake-3").textContent = format(stake3Play);
+      document.getElementById("stake-3-usd").textContent = format(stake3Play * currentPrice, 2);
       
-      document.getElementById("stake-6").textContent = format(stake6);
-      document.getElementById("stake-6-usd").textContent = format(stake6 * currentPrice, 2);
+      document.getElementById("stake-6").textContent = format(stake6Play);
+      document.getElementById("stake-6-usd").textContent = format(stake6Play * currentPrice, 2);
       
-      document.getElementById("stake-9").textContent = format(stake9);
-      document.getElementById("stake-9-usd").textContent = format(stake9 * currentPrice, 2);
+      document.getElementById("stake-9").textContent = format(stake9Play);
+      document.getElementById("stake-9-usd").textContent = format(stake9Play * currentPrice, 2);
       
-      document.getElementById("stake-12").textContent = format(stake12);
-      document.getElementById("stake-12-usd").textContent = format(stake12 * currentPrice, 2);
+      document.getElementById("stake-12").textContent = format(stake12Play);
+      document.getElementById("stake-12-usd").textContent = format(stake12Play * currentPrice, 2);
       
       document.getElementById("output").style.display = "block";
     }
