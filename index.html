@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>$PLAY Allocation Checker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0b0b1a;
+      --card: #111127;
+      --accent: #9d4edd;
+      --text: #e0e0ff;
+      --glow: 0 0 16px rgba(157,78,221,0.6);
+      --glow-strong: 0 0 32px rgba(157,78,221,0.9);
+      --warn: #ff6b6b;
+      --btn-glow: 0 0 20px rgba(157,78,221,0.5);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      background: var(--bg); color: var(--text); font-family: 'Inter', system-ui;
+      display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+      position: relative; overflow-x: hidden;
+    }
+
+    .bg-particles {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute; width: 4px; height: 4px; background: rgba(157,78,221,0.3);
+      border-radius: 50%; box-shadow: 0 0 10px rgba(157,78,221,0.5);
+      animation: float 15s infinite linear;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) translateX(-50px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
+    }
+
+    header {
+      width: 100%; text-align: center; padding: 1.8rem 1rem 1.2rem;
+      background: linear-gradient(to bottom, #1a1a2e, transparent);
+      position: relative; z-index: 10;
+    }
+    header img {
+      max-width: 100%; height: auto; max-height: 220px;
+      filter: drop-shadow(0 0 30px rgba(157,78,221,0.7));
+      border-radius: 16px;
+      animation: float-header 6s ease-in-out infinite;
+    }
+    @keyframes float-header { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+    .top-bar {
+      display: flex; justify-content: center; align-items: center; width: 100%; max-width: 680px;
+      margin: 0.5rem auto 0; padding: 0 1rem; font-size: 0.9rem; flex-wrap: wrap; gap: 0.6rem;
+    }
+    .countdown {
+      background: rgba(157,78,221,0.15); padding: 0.4rem 0.8rem; border-radius: 12px;
+      border: 1px solid rgba(157,78,221,0.3); color: var(--accent); font-weight: 600;
+    }
+    .top-btn {
+      background: linear-gradient(135deg, #7b3cd0, #9d4edd);
+      color: white; padding: 0.5rem 1rem; border-radius: 16px; font-size: 0.85rem;
+      text-decoration: none; font-weight: 600; box-shadow: var(--btn-glow);
+      transition: all 0.3s;
+    }
+    .top-btn:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(157,78,221,0.7); }
+
+    main { width: 100%; max-width: 680px; padding: 1.5rem; z-index: 5; }
+    h1 { font-size: 2.1rem; margin: 0.6rem 0; text-align: center; }
+
+    .warning {
+      background: rgba(255,107,107,0.15); border: 2px solid var(--warn);
+      border-radius: 16px; padding: 1.2rem; margin: 1.5rem 0;
+      text-align: center; font-weight: 600; color: #ffcccc;
+      box-shadow: 0 0 20px rgba(255,107,107,0.3);
+    }
+
+    .slider-container {
+      margin: 1.2rem 0; font-size: 0.9rem;
+    }
+    .slider-container label { display: block; margin-bottom: 0.4rem; }
+    input[type="range"] {
+      width: 100%; height: 8px; border-radius: 4px; background: #333;
+      outline: none; -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 20px; height: 20px;
+      background: var(--accent); border-radius: 50%; cursor: pointer;
+      box-shadow: var(--glow);
+    }
+
+    .search-box { position: relative; margin: 2rem 0; }
+    #search {
+      width: 100%; padding: 1.1rem 1.3rem; font-size: 1.15rem;
+      background: rgba(255,255,255,0.06); border: 2px solid rgba(157,78,221,0.4);
+      border-radius: 18px; color: var(--text); outline: none;
+      box-shadow: var(--glow); transition: all 0.3s;
+    }
+    #search:focus { border-color: var(--accent); box-shadow: var(--glow-strong); }
+
+    #autocomplete {
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+      max-height: 340px; overflow-y: auto; background: var(--card);
+      border-radius: 0 0 18px 18px; border: 2px solid rgba(157,78,221,0.4);
+      margin-top: -2px; display: none; box-shadow: var(--glow);
+    }
+    .auto-item {
+      padding: 1rem 1.3rem; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .auto-item:hover, .auto-item.highlight { background: rgba(157,78,221,0.25); }
+
+    .result {
+      background: var(--card); border-radius: 22px; padding: 2rem;
+      margin-top: 2rem; box-shadow: 0 14px 48px rgba(0,0,0,0.45);
+      display: none; animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+    .value { color: var(--accent); font-weight: 600; }
+    .scenario { margin: 0.8rem 0; padding: 1rem; background: rgba(157,78,221,0.1); border-radius: 10px; }
+    .liquidity-summary { margin: 1.2rem 0; padding: 1rem; background: rgba(0,255,0,0.1); border-radius: 10px; text-align: center; }
+    .psg1-input {
+      display: flex; align-items: center; gap: 0.8rem; margin: 1rem 0; font-size: 0.9rem;
+    }
+    .psg1-input input[type="number"] {
+      width: 60px; padding: 0.5rem; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(157,78,221,0.4); border-radius: 8px; color: var(--text);
+    }
+
+    /* BUTTON ROW */
+    .btn-row {
+      display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.9rem 1.8rem; border-radius: 16px; font-weight: 600; font-size: 1rem;
+      text-align: center; text-decoration: none; color: white; cursor: pointer;
+      box-shadow: var(--btn-glow); transition: all 0.3s; min-width: 140px;
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(157,78,221,0.8); }
+    .btn-share { background: linear-gradient(135deg, #7b3cd0, #9d4edd); }
+    .btn-coffee { background: linear-gradient(135deg, #f7931a, #e68619); animation: wiggle 2s infinite; }
+    .btn-follow { background: linear-gradient(135deg, #7b3cd0, #9d4edd); font-size: 0.9rem; }
+
+    @keyframes wiggle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: var(--card); border-radius: 20px; padding: 2rem; max-width: 500px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6); position: relative;
+    }
+    .close {
+      position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; cursor: pointer; color: #aaa;
+    }
+    .close:hover { color: white; }
+
+    footer {
+      margin: 3.5rem 0 2rem; font-size: 0.82rem; opacity: 0.75; text-align: center; line-height: 1.6;
+      z-index: 5;
+    }
+    footer em { font-style: normal; opacity: 0.9; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="bg-particles" id="particles"></div>
+
+  <header>
+    <img src="PSG1Header.svg" alt="PlaySolana PSG1">
+  </header>
+
+  <div class="top-bar">
+    <div class="countdown" id="countdown">TGE in: --:--:--</div>
+    <a href="https://claim.playsolana.com/" target="_blank" class="top-btn">Claim Site</a>
+    <a href="https://x.com/playsolana" target="_blank" class="top-btn">Follow @PlaySolana</a>
+    <a href="https://www.playsolana.com/litepaper" target="_blank" class="top-btn">Litepaper</a>
+    <div class="top-btn" onclick="openModal()">Tokenomics</div>
+  </div>
+
+  <main>
+    <h1>$PLAY Allocation Checker</h1>
+
+    <div class="warning">
+      <strong>ASSUMED VALUES — NOT OFFICIAL</strong><br>
+      This tool uses estimated XP data and tokenomics. Final allocations may differ. Not financial advice.
+    </div>
+
+    <div class="slider-container">
+      <label>XP Release %: <span id="xp-pct-val">17</span>%</label>
+      <input type="range" id="xp-pct" min="5" max="17" value="17" step="0.1">
+    </div>
+    <div class="slider-container">
+      <label>$PLAY Price: $<span id="price-val">0.02</span></label>
+      <input type="range" id="price" min="0.01" max="0.05" value="0.02" step="0.001">
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="search" placeholder="e.g. VOODOORANGER" autocomplete="off" />
+      <div id="autocomplete"></div>
+    </div>
+
+    <div id="status" style="text-align:center; margin:1.2rem 0; color:#888;"></div>
+
+    <div id="output" class="result">
+      <p>User: <span id="show-name" class="value"></span> <small>(Rank <span id="show-rank"></span>)</small></p>
+      <p>XP: <span id="show-xp" class="value"></span></p>
+      <hr>
+      <div class="liquidity-summary">
+        <strong>Total XP Liquidity (presumed):</strong><br>
+        $<span id="total-usd" class="value"></span> USD
+      </div>
+
+      <div class="psg1-input" id="psg1-section" style="display:none;">
+        <label><input type="checkbox" id="has-psg1"> I have PSG1 device(s)</label>
+        <input type="number" id="psg1-count" min="1" max="10" value="1" disabled>
+      </div>
+
+      <div class="scenario">
+        <strong>Base Allocation (XP + PSG1):</strong><br>
+        <span id="base-play" class="value"></span> $PLAY → $<span id="base-usd" class="value"></span> USD
+      </div>
+
+      <div class="scenario">
+        <strong>Staking Rewards (Day 1 Claim + Stake):</strong><br>
+        3 Mo → +10%: <span id="stake-3" class="value"></span> $PLAY ($<span id="stake-3-usd"></span>)<br>
+        6 Mo → +40%: <span id="stake-6" class="value"></span> $PLAY ($<span id="stake-6-usd"></span>)<br>
+        9 Mo → +60%: <span id="stake-9" class="value"></span> $PLAY ($<span id="stake-9-usd"></span>)<br>
+        12 Mo → +100%: <span id="stake-12" class="value"></span> $PLAY ($<span id="stake-12-usd"></span>)
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-share" onclick="shareOnX()">Share on X</button>
+        <button class="btn btn-coffee" onclick="copySol()">Buy Me a Coffee (SOL)</button>
+        <a href="https://x.com/Heimdall0_0" target="_blank" class="btn btn-follow">Follow @Heimdall0_0</a>
+      </div>
+
+      <p style="font-size:0.8rem; opacity:0.7; text-align:center; margin-top:0.5rem;">
+        2GwHm5n8KbHgruhfVWHRukRGKoj4QVNC7Q2NCKw5xPph
+      </p>
+    </div>
+  </main>
+
+  <!-- TOKENOMICS MODAL -->
+  <div id="tokenomics-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <h2>$PLAY Tokenomics (5B Total Supply)</h2>
+      <ul style="list-style:none; text-align:left; font-size:0.9rem; line-height:1.7;">
+        <li><strong>26%</strong> PlaySolana Superhub</li>
+        <li><strong>22%</strong> Community</li>
+        <li><strong>16%</strong> PlaySolana Contributors</li>
+        <li><strong>10%</strong> Liquidity</li>
+        <li><strong>10%</strong> PlaySolana Investors</li>
+        <li><strong>8%</strong> Treasury</li>
+        <li><strong>5%</strong> Labs</li>
+        <li><strong>3%</strong> Metaplex</li>
+      </ul>
+      <p style="margin-top:1rem; font-size:0.85rem; opacity:0.8;">
+        <strong>PSG1 Holders:</strong> ~5% of supply (250M $PLAY) → <strong>25,000 $PLAY per device</strong> (avg)<br>
+        <strong>Total XP Liquidity (presumed):</strong> $17,000,000 USD (@ $0.02)
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    TGE: November 14, 2025 @ 12:30 UTC | Data from PlayDex snapshot<br>
+    <em>Estimated. Not official. Not financial advice.</em>
+  </footer>
+
+  <script>
+    const TOTAL_XP = 125598035;
+    const TOTAL_SUPPLY = 5000000000;
+    const XP_ALLOCATION_PCT = 0.17;
+    const TOKENS_FOR_XP = TOTAL_SUPPLY * XP_ALLOCATION_PCT;
+    const PSG1_TOKENS = TOTAL_SUPPLY * 0.05;
+    const PSG1_AVG_DEVICES = 10000;
+    const SOL_ADDRESS = "2GwHm5n8KbHgruhfVWHRukRGKoj4QVNC7Q2NCKw5xPph";
+    const TGE_TIME = new Date("2025-11-14T12:30:00Z").getTime(); // 12:30 UTC
+    const WEBSITE_URL = "https://heimdall00.github.io/play-check";
+
+    let users = [];
+    let currentXpPct = 17;
+    let currentPrice = 0.02;
+    let hasPsg1 = false;
+    let psg1Count = 1;
+    let lastResult = {};
+
+    // FULL LIVE COUNTDOWN: d h m s
+    function getCountdown() {
+      const diff = TGE_TIME - Date.now();
+      if (diff <= 0) return "TGE LIVE!";
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      return `${d}d ${h}h ${m}m ${s}s`;
+    }
+
+    setInterval(() => {
+      document.getElementById("countdown").textContent = `TGE in: ${getCountdown()}`;
+    }, 1000);
+
+    // Sliders
+    document.getElementById("xp-pct").addEventListener("input", function() {
+      currentXpPct = +this.value; document.getElementById("xp-pct-val").textContent = currentXpPct.toFixed(1); updateResult();
+    });
+    document.getElementById("price").addEventListener("input", function() {
+      currentPrice = +this.value; document.getElementById("price-val").textContent = currentPrice.toFixed(3); updateResult();
+    });
+
+    // PSG1
+    document.getElementById("has-psg1").addEventListener("change", function() {
+      hasPsg1 = this.checked; document.getElementById("psg1-count").disabled = !hasPsg1; updateResult();
+    });
+    document.getElementById("psg1-count").addEventListener("input", function() {
+      psg1Count = Math.max(1, Math.min(10, +this.value || 1)); this.value = psg1Count; updateResult();
+    });
+
+    // Share on X
+    window.shareOnX = function() {
+      const play = format(lastResult.totalPlay);
+      const usd = format(lastResult.totalUsd, 2);
+      const countdown = getCountdown();
+      const tweet = `I'm getting ${play} $PLAY (~$${usd} at $${currentPrice}) from PlaySolana XP + PSG1!\n\nTGE in ${countdown} — check yours: ${WEBSITE_URL}\n\nSOLANA WILL NEVER BE THE SAME\n\n#PlaySolana #TGE`;
+      window.open(`https://x.com/intent/post?text=${encodeURIComponent(tweet)}`, '_blank');
+    };
+
+    window.copySol = () => { navigator.clipboard.writeText(SOL_ADDRESS); alert("SOL address copied!"); };
+    window.openModal = () => document.getElementById("tokenomics-modal").style.display = "flex";
+    window.closeModal = () => document.getElementById("tokenomics-modal").style.display = "none";
+
+    // Particles
+    function createParticle() {
+      const p = document.createElement("div"); p.className = "particle";
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.animationDelay = Math.random() * 15 + "s";
+      p.style.animationDuration = (Math.random() * 10 + 10) + "s";
+      document.getElementById("particles").appendChild(p);
+      setTimeout(() => p.remove(), 25000);
+    }
+    for (let i = 0; i < 30; i++) setTimeout(createParticle, i * 500);
+
+    // Load & Search
+    async function loadData() {
+      const resp = await fetch("leaderboard.json");
+      users = (await resp.json()).map((u, i) => ({ name: (u.name||"").trim(), rank: u.rank || i+1, xp: u.totalScore || 0 }));
+    }
+
+    const input = document.getElementById("search");
+    const box = document.getElementById("autocomplete");
+
+    function render(matches) {
+      box.innerHTML = ""; box.style.display = matches.length ? "block" : "none";
+      matches.slice(0,40).forEach((u,i) => {
+        const div = document.createElement("div"); div.className = "auto-item";
+        div.innerHTML = `<strong>${escapeHtml(u.name)}</strong> <small>(#${u.rank}) – ${u.xp.toLocaleString()} XP</small>`;
+        div.onclick = () => { input.value = u.name; box.style.display = "none"; document.getElementById("psg1-section").style.display = "flex"; showResult(u); };
+        box.appendChild(div);
+      });
+    }
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { render([]); document.getElementById("psg1-section").style.display = "none"; return; }
+      render(users.filter(u => u.name.toLowerCase().includes(q)));
+    });
+
+    function showResult(u) {
+      const rate = (TOKENS_FOR_XP * (currentXpPct/17)) / TOTAL_XP;
+      const basePlay = u.xp * rate;
+      const psg1Play = hasPsg1 ? (PSG1_TOKENS / PSG1_AVG_DEVICES) * psg1Count : 0;
+      const totalPlay = basePlay + psg1Play;
+      const totalUsd = totalPlay * currentPrice;
+
+      lastResult = { totalPlay, totalUsd };
+
+      document.getElementById("show-name").textContent = u.name;
+      document.getElementById("show-rank").textContent = u.rank;
+      document.getElementById("show-xp").textContent = u.xp.toLocaleString();
+      document.getElementById("total-usd").textContent = format(TOKENS_FOR_XP * currentPrice * (currentXpPct/17), 0);
+      document.getElementById("base-play").textContent = format(totalPlay);
+      document.getElementById("base-usd").textContent = format(totalUsd, 2);
+      ["3","6","9","12"].forEach(m => {
+        const bonus = m === "3" ? 1.1 : m === "6" ? 1.4 : m === "9" ? 1.6 : 2.0;
+        document.getElementById(`stake-${m}`).textContent = format(totalPlay * bonus);
+        document.getElementById(`stake-${m}-usd`).textContent = format(totalPlay * bonus * currentPrice, 2);
+      });
+      document.getElementById("output").style.display = "block";
+    }
+
+    function format(n, d=6) { return Number(n.toFixed(d)).toLocaleString(); }
+    function escapeHtml(t) { const div = document.createElement("div"); div.textContent = t; return div.innerHTML; }
+
+    window.onload = async () => {
+      await loadData();
+      setInterval(() => { for (let i = 0; i < 2; i++) createParticle(); }, 3000);
+    };
+  </script>
+</body>
+</html>
