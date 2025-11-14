@@ -83,12 +83,16 @@
     .slider-container label { display: block; margin-bottom: 0.4rem; }
     input[type="range"] {
       width: 100%; height: 8px; border-radius: 4px; background: #333;
-      outline: none; -webkit-appearance: none;
+      outline: none; -webkit-appearance: none; touch-action: pan-y;
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none; width: 20px; height: 20px;
       background: var(--accent); border-radius: 50%; cursor: pointer;
       box-shadow: var(--glow);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px; background: var(--accent); border-radius: 50%;
+      cursor: pointer; box-shadow: var(--glow); border: none;
     }
 
     .search-box { position: relative; margin: 2rem 0; }
@@ -128,7 +132,6 @@
       border: 1px solid rgba(157,78,221,0.4); border-radius: 8px; color: var(--text);
     }
 
-    /* BUTTON ROW */
     .btn-row {
       display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap;
     }
@@ -247,7 +250,6 @@
     </div>
   </main>
 
-  <!-- TOKENOMICS MODAL -->
   <div id="tokenomics-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">×</span>
@@ -282,7 +284,7 @@
     const PSG1_TOKENS = TOTAL_SUPPLY * 0.05;
     const PSG1_AVG_DEVICES = 10000;
     const SOL_ADDRESS = "2GwHm5n8KbHgruhfVWHRukRGKoj4QVNC7Q2NCKw5xPph";
-    const TGE_TIME = new Date("2025-11-14T12:30:00Z").getTime(); // 12:30 UTC
+    const TGE_TIME = new Date("2025-11-14T12:30:00Z").getTime();
     const WEBSITE_URL = "https://heimdall00.github.io/play-check";
 
     let users = [];
@@ -292,7 +294,7 @@
     let psg1Count = 1;
     let lastResult = {};
 
-    // FULL LIVE COUNTDOWN: d h m s
+    // COUNTDOWN WITH SECONDS
     function getCountdown() {
       const diff = TGE_TIME - Date.now();
       if (diff <= 0) return "TGE LIVE!";
@@ -302,28 +304,46 @@
       const s = Math.floor((diff % 60000) / 1000);
       return `${d}d ${h}h ${m}m ${s}s`;
     }
-
     setInterval(() => {
       document.getElementById("countdown").textContent = `TGE in: ${getCountdown()}`;
     }, 1000);
 
-    // Sliders
-    document.getElementById("xp-pct").addEventListener("input", function() {
-      currentXpPct = +this.value; document.getElementById("xp-pct-val").textContent = currentXpPct.toFixed(1); updateResult();
+    // SLIDERS — FIXED WITH PROPER EVENT LISTENERS
+    const xpSlider = document.getElementById("xp-pct");
+    const priceSlider = document.getElementById("price");
+    const xpVal = document.getElementById("xp-pct-val");
+    const priceVal = document.getElementById("price-val");
+
+    xpSlider.addEventListener("input", () => {
+      currentXpPct = parseFloat(xpSlider.value);
+      xpVal.textContent = currentXpPct.toFixed(1);
+      updateResult();
     });
-    document.getElementById("price").addEventListener("input", function() {
-      currentPrice = +this.value; document.getElementById("price-val").textContent = currentPrice.toFixed(3); updateResult();
+
+    priceSlider.addEventListener("input", () => {
+      currentPrice = parseFloat(priceSlider.value);
+      priceVal.textContent = currentPrice.toFixed(3);
+      updateResult();
     });
 
     // PSG1
-    document.getElementById("has-psg1").addEventListener("change", function() {
-      hasPsg1 = this.checked; document.getElementById("psg1-count").disabled = !hasPsg1; updateResult();
-    });
-    document.getElementById("psg1-count").addEventListener("input", function() {
-      psg1Count = Math.max(1, Math.min(10, +this.value || 1)); this.value = psg1Count; updateResult();
+    const psg1Check = document.getElementById("has-psg1");
+    const psg1Input = document.getElementById("psg1-count");
+
+    psg1Check.addEventListener("change", () => {
+      hasPsg1 = psg1Check.checked;
+      psg1Input.disabled = !hasPsg1;
+      if (!hasPsg1) psg1Input.value = 1;
+      updateResult();
     });
 
-    // Share on X
+    psg1Input.addEventListener("input", () => {
+      psg1Count = Math.max(1, Math.min(10, parseInt(psg1Input.value) || 1));
+      psg1Input.value = psg1Count;
+      updateResult();
+    });
+
+    // SHARE
     window.shareOnX = function() {
       const play = format(lastResult.totalPlay);
       const usd = format(lastResult.totalUsd, 2);
@@ -336,7 +356,7 @@
     window.openModal = () => document.getElementById("tokenomics-modal").style.display = "flex";
     window.closeModal = () => document.getElementById("tokenomics-modal").style.display = "none";
 
-    // Particles
+    // PARTICLES
     function createParticle() {
       const p = document.createElement("div"); p.className = "particle";
       p.style.left = Math.random() * 100 + "vw";
@@ -347,10 +367,19 @@
     }
     for (let i = 0; i < 30; i++) setTimeout(createParticle, i * 500);
 
-    // Load & Search
+    // LOAD & SEARCH
     async function loadData() {
-      const resp = await fetch("leaderboard.json");
-      users = (await resp.json()).map((u, i) => ({ name: (u.name||"").trim(), rank: u.rank || i+1, xp: u.totalScore || 0 }));
+      try {
+        const resp = await fetch("leaderboard.json");
+        if (!resp.ok) throw new Error("leaderboard.json not found");
+        users = (await resp.json()).map((u, i) => ({
+          name: (u.name || "").trim(),
+          rank: u.rank || i + 1,
+          xp: u.totalScore || 0
+        }));
+      } catch (e) {
+        document.getElementById("status").textContent = "Error: " + e.message;
+      }
     }
 
     const input = document.getElementById("search");
@@ -358,7 +387,7 @@
 
     function render(matches) {
       box.innerHTML = ""; box.style.display = matches.length ? "block" : "none";
-      matches.slice(0,40).forEach((u,i) => {
+      matches.slice(0, 40).forEach(u => {
         const div = document.createElement("div"); div.className = "auto-item";
         div.innerHTML = `<strong>${escapeHtml(u.name)}</strong> <small>(#${u.rank}) – ${u.xp.toLocaleString()} XP</small>`;
         div.onclick = () => { input.value = u.name; box.style.display = "none"; document.getElementById("psg1-section").style.display = "flex"; showResult(u); };
@@ -373,7 +402,7 @@
     });
 
     function showResult(u) {
-      const rate = (TOKENS_FOR_XP * (currentXpPct/17)) / TOTAL_XP;
+      const rate = (TOKENS_FOR_XP * (currentXpPct / 17)) / TOTAL_XP;
       const basePlay = u.xp * rate;
       const psg1Play = hasPsg1 ? (PSG1_TOKENS / PSG1_AVG_DEVICES) * psg1Count : 0;
       const totalPlay = basePlay + psg1Play;
@@ -384,7 +413,7 @@
       document.getElementById("show-name").textContent = u.name;
       document.getElementById("show-rank").textContent = u.rank;
       document.getElementById("show-xp").textContent = u.xp.toLocaleString();
-      document.getElementById("total-usd").textContent = format(TOKENS_FOR_XP * currentPrice * (currentXpPct/17), 0);
+      document.getElementById("total-usd").textContent = format(TOKENS_FOR_XP * currentPrice * (currentXpPct / 17), 0);
       document.getElementById("base-play").textContent = format(totalPlay);
       document.getElementById("base-usd").textContent = format(totalUsd, 2);
       ["3","6","9","12"].forEach(m => {
@@ -395,7 +424,12 @@
       document.getElementById("output").style.display = "block";
     }
 
-    function format(n, d=6) { return Number(n.toFixed(d)).toLocaleString(); }
+    function updateResult() {
+      const selected = users.find(u => u.name.toLowerCase() === input.value.trim().toLowerCase());
+      if (selected) showResult(selected);
+    }
+
+    function format(n, d = 6) { return Number(n.toFixed(d)).toLocaleString(); }
     function escapeHtml(t) { const div = document.createElement("div"); div.textContent = t; return div.innerHTML; }
 
     window.onload = async () => {
