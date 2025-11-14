@@ -191,8 +191,14 @@
     <h1>$PLAY Allocation Checker</h1>
 
     <div class="warning">
-      <strong>CONFIRMED VALUES</strong><br>
-      0.8759 $PLAY per XP | 10,000 $PLAY per PSG1 device
+      <strong>⚠️ LEADERBOARD DATA IS POST-SNAPSHOT</strong><br>
+      XP values may be slightly higher than snapshot (users kept earning XP).<br>
+      Tool should be close, but check genesis.playsolana.com/claim for exact allocation.<br>
+      <small style="opacity:0.8;"><strong>Confirmed: 0.75 $PLAY per XP | 10k $PLAY per PSG1</strong></small>
+    </div>
+
+    <div style="background: rgba(157,78,221,0.15); border: 1px solid rgba(157,78,221,0.3); border-radius: 16px; padding: 1rem; margin: 1rem 0; font-size: 0.9rem; text-align: center;">
+      <strong>Confirmed Rates:</strong> 0.75 $PLAY per XP (at snapshot) | 10,000 $PLAY per PSG1
     </div>
 
     <div class="slider-container">
@@ -209,11 +215,17 @@
 
     <div id="output" class="result">
       <p>User: <span id="show-name" class="value"></span> <small>(Rank <span id="show-rank"></span>)</small></p>
-      <p>XP: <span id="show-xp" class="value"></span></p>
+      <p>XP: <span id="show-xp" class="value"></span> <small style="color:#ffcc66;">(May be slightly post-snapshot)</small></p>
       <hr>
+      
+      <div style="background: rgba(255,204,102,0.15); border: 1px solid #ffcc66; border-radius: 12px; padding: 0.8rem; margin: 1rem 0; font-size: 0.85rem; text-align: center;">
+        <strong>Estimates based on 0.75 $PLAY per XP</strong><br>
+        Should be close, but verify on claim site for exact amount.
+      </div>
+
       <div class="liquidity-summary">
         <strong>Total XP Pool:</strong><br>
-        $<span id="total-usd" class="value"></span> USD (110M $PLAY)
+        $<span id="total-usd" class="value"></span> USD (~94M $PLAY)
       </div>
 
       <div class="psg1-input" id="psg1-section" style="display:none;">
@@ -222,7 +234,7 @@
       </div>
 
       <div class="scenario">
-        <strong>Base Allocation (XP + PSG1):</strong><br>
+        <strong>Estimated Allocation (XP + PSG1):</strong><br>
         <span id="base-play" class="value"></span> $PLAY → $<span id="base-usd" class="value"></span> USD
       </div>
 
@@ -264,23 +276,23 @@
         <strong>Confirmed Allocation:</strong><br>
         <strong>PSG1 Holders:</strong> 10,000 $PLAY per device<br>
         <em>(10,000 minted → 100M $PLAY total)</em><br>
-        <strong>XP Rewards:</strong> 0.8759 $PLAY per XP<br>
-        <em>(125.6M total XP → 110M $PLAY total)</em>
+        <strong>XP Rewards:</strong> 0.75 $PLAY per XP<br>
+        <em>(125.6M total XP → ~94M $PLAY total)</em>
       </p>
     </div>
   </div>
 
   <footer>
-    TGE: November 14, 2025 @ 12:30 UTC | Data from PlayDex snapshot<br>
-    <em>Confirmed values. Not financial advice.</em>
+    TGE: November 14, 2025 @ 12:30 UTC | Data from PlayDex (post-snapshot)<br>
+    <em>Using confirmed rate: 0.75 $PLAY per XP. Verify on claim site for exact values.</em>
   </footer>
 
   <script>
     const TOTAL_XP = 125598035;
     const TOTAL_SUPPLY = 5000000000;
-    const XP_RATE = 0.8759; // Confirmed: 0.8759 $PLAY per XP
+    const XP_RATE = 0.75; // Confirmed: 0.75 $PLAY per XP
     const PSG1_PER_DEVICE = 10000; // Confirmed: 10k $PLAY per PSG1
-    const TOKENS_FOR_XP = TOTAL_XP * XP_RATE; // ~110M tokens
+    const TOKENS_FOR_XP = TOTAL_XP * XP_RATE; // ~94.2M tokens
     const SOL_ADDRESS = "2GwHm5n8KbHgruhfVWHRukRGKoj4QVNC7Q2NCKw5xPph";
     const TGE_TIME = new Date("2025-11-14T12:30:00Z").getTime();
     const WEBSITE_URL = "https://heimdall00.github.io/play-check";
