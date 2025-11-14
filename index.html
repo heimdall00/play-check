@@ -181,7 +181,7 @@
 
   <div class="top-bar">
     <div class="countdown" id="countdown">TGE in: --:--:--</div>
-    <a href="https://claim.playsolana.com/" target="_blank" class="top-btn">Claim Site</a>
+    <a href="https://genesis.playsolana.com/claim" target="_blank" class="top-btn">Claim Site</a>
     <a href="https://x.com/playsolana" target="_blank" class="top-btn">Follow @PlaySolana</a>
     <a href="https://www.playsolana.com/litepaper" target="_blank" class="top-btn">Litepaper</a>
     <div class="top-btn" onclick="openModal()">Tokenomics</div>
@@ -191,14 +191,10 @@
     <h1>$PLAY Allocation Checker</h1>
 
     <div class="warning">
-      <strong>ASSUMED VALUES — NOT OFFICIAL</strong><br>
-      This tool uses estimated XP data and tokenomics. Final allocations may differ. Not financial advice.
+      <strong>CONFIRMED VALUES</strong><br>
+      0.8759 $PLAY per XP | 10,000 $PLAY per PSG1 device
     </div>
 
-    <div class="slider-container">
-      <label>XP Release %: <span id="xp-pct-val">16</span>%</label>
-      <input type="range" id="xp-pct" min="5" max="16" value="16" step="0.1">
-    </div>
     <div class="slider-container">
       <label>$PLAY Price: $<span id="price-val">0.02</span></label>
       <input type="range" id="price" min="0.01" max="0.05" value="0.02" step="0.001">
@@ -216,8 +212,8 @@
       <p>XP: <span id="show-xp" class="value"></span></p>
       <hr>
       <div class="liquidity-summary">
-        <strong>Total XP Liquidity (presumed):</strong><br>
-        $<span id="total-usd" class="value"></span> USD
+        <strong>Total XP Pool:</strong><br>
+        $<span id="total-usd" class="value"></span> USD (110M $PLAY)
       </div>
 
       <div class="psg1-input" id="psg1-section" style="display:none;">
@@ -265,31 +261,31 @@
         <li><strong>3%</strong> Metaplex</li>
       </ul>
       <p style="margin-top:1rem; font-size:0.85rem; opacity:0.8;">
-        <strong>PSG1 Holders:</strong> 5% of supply (250M $PLAY) → <strong>25,000 $PLAY per device</strong><br>
-        <em>10,000 minted | ~9,054 holders on Magic Eden</em><br>
-        <strong>XP Rewards:</strong> 16% of supply (800M $PLAY) → ~6.37 $PLAY per XP
+        <strong>Confirmed Allocation:</strong><br>
+        <strong>PSG1 Holders:</strong> 10,000 $PLAY per device<br>
+        <em>(10,000 minted → 100M $PLAY total)</em><br>
+        <strong>XP Rewards:</strong> 0.8759 $PLAY per XP<br>
+        <em>(125.6M total XP → 110M $PLAY total)</em>
       </p>
     </div>
   </div>
 
   <footer>
     TGE: November 14, 2025 @ 12:30 UTC | Data from PlayDex snapshot<br>
-    <em>Estimated. Not official. Not financial advice.</em>
+    <em>Confirmed values. Not financial advice.</em>
   </footer>
 
   <script>
     const TOTAL_XP = 125598035;
     const TOTAL_SUPPLY = 5000000000;
-    const XP_ALLOCATION_PCT = 0.16; // 800M tokens
-    const TOKENS_FOR_XP = TOTAL_SUPPLY * XP_ALLOCATION_PCT;
-    const PSG1_TOKENS = TOTAL_SUPPLY * 0.05; // 250M
-    const PSG1_TOTAL_DEVICES = 10000; // 10,000 minted
+    const XP_RATE = 0.8759; // Confirmed: 0.8759 $PLAY per XP
+    const PSG1_PER_DEVICE = 10000; // Confirmed: 10k $PLAY per PSG1
+    const TOKENS_FOR_XP = TOTAL_XP * XP_RATE; // ~110M tokens
     const SOL_ADDRESS = "2GwHm5n8KbHgruhfVWHRukRGKoj4QVNC7Q2NCKw5xPph";
     const TGE_TIME = new Date("2025-11-14T12:30:00Z").getTime();
     const WEBSITE_URL = "https://heimdall00.github.io/play-check";
 
     let users = [];
-    let currentXpPct = 16; // Default 16%
     let currentPrice = 0.02;
     let hasPsg1 = false;
     let psg1Count = 1;
@@ -309,17 +305,9 @@
       document.getElementById("countdown").textContent = `TGE in: ${getCountdown()}`;
     }, 1000);
 
-    // SLIDERS — FIXED FOR PC + MOBILE
-    const xpSlider = document.getElementById("xp-pct");
+    // PRICE SLIDER
     const priceSlider = document.getElementById("price");
-    const xpVal = document.getElementById("xp-pct-val");
     const priceVal = document.getElementById("price-val");
-
-    xpSlider.addEventListener("input", () => {
-      currentXpPct = parseFloat(xpSlider.value);
-      xpVal.textContent = currentXpPct.toFixed(1);
-      updateResult();
-    });
 
     priceSlider.addEventListener("input", () => {
       currentPrice = parseFloat(priceSlider.value);
@@ -403,9 +391,8 @@
     });
 
     function showResult(u) {
-      const rate = (TOKENS_FOR_XP * (currentXpPct / 16)) / TOTAL_XP;
-      const basePlay = u.xp * rate;
-      const psg1Play = hasPsg1 ? (PSG1_TOKENS / PSG1_TOTAL_DEVICES) * psg1Count : 0;
+      const basePlay = u.xp * XP_RATE;
+      const psg1Play = hasPsg1 ? PSG1_PER_DEVICE * psg1Count : 0;
       const totalPlay = basePlay + psg1Play;
       const totalUsd = totalPlay * currentPrice;
 
@@ -414,7 +401,7 @@
       document.getElementById("show-name").textContent = u.name;
       document.getElementById("show-rank").textContent = u.rank;
       document.getElementById("show-xp").textContent = u.xp.toLocaleString();
-      document.getElementById("total-usd").textContent = format(TOKENS_FOR_XP * currentPrice * (currentXpPct / 16), 0);
+      document.getElementById("total-usd").textContent = format(TOKENS_FOR_XP * currentPrice, 0);
       document.getElementById("base-play").textContent = format(totalPlay);
       document.getElementById("base-usd").textContent = format(totalUsd, 2);
       ["3","6","9","12"].forEach(m => {
